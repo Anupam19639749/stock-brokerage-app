@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-R">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .header {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .status-approved {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .order-details {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+            .order-details th, .order-details td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .order-details th {
+                background-color: #f4f4f4;
+            }
+
+        .footer {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">Your Trade Has Been Executed</div>
+        <p>Hi {{UserName}},</p>
+        <p>Your order to **{{OrderType}} {{Quantity}} shares** of **{{Ticker}}** has been successfully executed.</p>
+        <p>Order Status: <span class="status-approved">{{Status}}</span></p>
+
+        <table class="order-details">
+            <tr>
+                <th>Ticker</th>
+                <td>{{Ticker}}</td>
+            </tr>
+            <tr>
+                <th>Order Type</th>
+                <td>{{OrderType}}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{Quantity}}</td>
+            </tr>
+            <tr>
+                <th>Price Per Share</th>
+                <td>${{PricePerShare}}</td>
+            </tr>
+            <tr>
+                <th>Total Value</th>
+                <td>${{TotalValue}}</td>
+            </tr>
+            <tr>
+                <th>Order ID</th>
+                <td>#{{OrderId}}</td>
+            </tr>
+        </table>
+
+        <p>This transaction has been reflected in your portfolio and wallet.</p>
+        <br>
+        <p class="footer">Thank you for trading with us,<br>The Stock Tracker Team</p>
+    </div>
+</body>
+</html>
