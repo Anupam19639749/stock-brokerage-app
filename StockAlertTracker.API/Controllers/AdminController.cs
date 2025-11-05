@@ -45,6 +45,33 @@ namespace StockAlertTracker.API.Controllers
             return Ok(response);
         }
 
-        // --- Order approval endpoints will be added in Part 3 ---
+        [HttpGet("orders/pending")]
+        public async Task<IActionResult> GetPendingOrders()
+        {
+            var response = await _adminService.GetPendingOrdersAsync();
+            return Ok(response);
+        }
+
+        [HttpPost("orders/approve/{orderId}")]
+        public async Task<IActionResult> ApproveOrder(int orderId)
+        {
+            var response = await _adminService.ApproveOrderAsync(orderId);
+            if (!response.Success)
+            {
+                return BadRequest(response); // 400 Bad Request if order isn't valid
+            }
+            return Ok(response);
+        }
+
+        [HttpPost("orders/reject/{orderId}")]
+        public async Task<IActionResult> RejectOrder(int orderId)
+        {
+            var response = await _adminService.RejectOrderAsync(orderId);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }

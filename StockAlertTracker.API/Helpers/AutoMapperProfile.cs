@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using StockAlertTracker.API.DTOs.Admin;
 using StockAlertTracker.API.DTOs.User;
+using StockAlertTracker.API.DTOs.Trade;
 using StockAlertTracker.API.DTOs.Wallet;
 using StockAlertTracker.API.Models;
 
@@ -27,6 +28,14 @@ namespace StockAlertTracker.API.Helpers
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
                 .ForMember(dest => dest.SubmittedAt, opt => opt.MapFrom(src => src.CreatedAt)); // Assuming submission time is creation time
+
+            // Maps our database Order model to the DTO we show the user
+            CreateMap<Order, OrderDetailsDto>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            // Maps our database PortfolioHolding model to the DTO
+            CreateMap<PortfolioHolding, PortfolioHoldingDto>();
         }
     }
 }

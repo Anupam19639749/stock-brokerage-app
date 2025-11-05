@@ -22,7 +22,7 @@ namespace StockAlertTracker.API.Controllers
 
         private int GetUserIdFromToken()
         {
-            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         }
 
         [HttpGet("balance")]

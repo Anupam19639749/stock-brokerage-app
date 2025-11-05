@@ -31,12 +31,18 @@ builder.Services.AddScoped<IPlatformStatsRepository, PlatformStatsRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 
 // --- 3. Register Services ---
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+
+builder.Services.AddScoped<IStockDataService, StockDataService>();
+builder.Services.AddScoped<ITradeService, TradeService>();
+builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 
 // --- 4. Add AutoMapper ---
 builder.Services.AddAutoMapper(cfg =>
@@ -47,6 +53,11 @@ builder.Services.AddAutoMapper(cfg =>
 // --- 5. Add HttpContextAccessor (needed for services to access user ID) ---
 builder.Services.AddHttpContextAccessor();
 
+// --- Configure HttpClientFactory for Finnhub ---
+builder.Services.AddHttpClient("Finnhub", client =>
+{
+    client.BaseAddress = new Uri("https://finnhub.io/api/v1/");
+});
 
 builder.Services.AddControllers();
 
