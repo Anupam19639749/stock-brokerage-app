@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using StockAlertTracker.API.DTOs.Admin;
-using StockAlertTracker.API.DTOs.User;
+using StockAlertTracker.API.DTOs.Alert;
 using StockAlertTracker.API.DTOs.Trade;
+using StockAlertTracker.API.DTOs.User;
 using StockAlertTracker.API.DTOs.Wallet;
 using StockAlertTracker.API.Models;
 
@@ -36,6 +37,11 @@ namespace StockAlertTracker.API.Helpers
 
             // Maps our database PortfolioHolding model to the DTO
             CreateMap<PortfolioHolding, PortfolioHoldingDto>();
+
+            //Alerts
+            CreateMap<PriceAlert, AlertDetailsDto>()
+                .ForMember(dest => dest.Condition, opt => opt.MapFrom(src => src.Condition.ToString()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
         }
     }
 }

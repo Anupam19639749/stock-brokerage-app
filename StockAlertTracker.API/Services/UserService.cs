@@ -96,7 +96,7 @@ namespace StockAlertTracker.API.Services
             return response;
         }
 
-        public async Task<ServiceResponse<string>> UpdateProfileImageAsync(int userId, byte[] imageBytes)
+        public async Task<ServiceResponse<string>> UpdateProfileImageAsync(int userId, byte[] imageBytes, string contentType)
         {
             var response = new ServiceResponse<string>();
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -117,6 +117,7 @@ namespace StockAlertTracker.API.Services
             }
 
             user.ProfileImage = imageBytes;
+            user.ProfileImageContentType = contentType;
             _unitOfWork.Users.Update(user);
             await _unitOfWork.CompleteAsync();
 

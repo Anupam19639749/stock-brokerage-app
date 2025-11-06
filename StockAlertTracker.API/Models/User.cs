@@ -40,7 +40,10 @@ namespace StockAlertTracker.API.Models
         [Column(TypeName = "date")]
         public DateTime? DateOfBirth { get; set; }
 
-        public byte[]? ProfileImage { get; set; } // Stored as varbinary(MAX)
+        public byte[]? ProfileImage { get; set; }
+
+        [StringLength(50)] // e.g., "image/jpeg"
+        public string? ProfileImageContentType { get; set; }
 
         // --- KYC Fields ---
         [StringLength(10, MinimumLength = 10, ErrorMessage = "PAN must be 10 characters")]

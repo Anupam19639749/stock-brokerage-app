@@ -47,5 +47,34 @@ namespace StockAlertTracker.API.Controllers
             }
             return Ok(response);
         }
+
+        [HttpGet("indices")]
+        public async Task<IActionResult> GetMarketIndices()
+        {
+            var response = await _stockDataService.GetMarketIndicesAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("market-overview")]
+        public async Task<IActionResult> GetMarketOverview([FromQuery] int page = 1, [FromQuery] int limit = 6)
+        {
+            if (page < 1) page = 1;
+            if (limit < 1) limit = 6;
+
+            var response = await _stockDataService.GetMarketOverviewAsync(page, limit);
+            return Ok(response);
+        }
+
+        [HttpGet("profile/{ticker}")]
+        public async Task<IActionResult> GetCompanyProfile(string ticker)
+        {
+            var response = await _stockDataService.GetCompanyProfileAsync(ticker);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }
+

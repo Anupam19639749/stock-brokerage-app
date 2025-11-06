@@ -9,6 +9,6 @@ namespace StockAlertTracker.API.Interfaces.Services
         Task<ServiceResponse<string>> SubmitKycAsync(int userId, KycSubmitDto kycDto);
         Task<ServiceResponse<UserDetailsDto>> UpdateProfileAsync(int userId, ProfileUpdateDto profileDto);
 
-        Task<ServiceResponse<string>> UpdateProfileImageAsync(int userId, byte[] imageBytes);
+        Task<ServiceResponse<string>> UpdateProfileImageAsync(int userId, byte[] imageBytes, string contentType);
     }
 }

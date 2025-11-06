@@ -7,6 +7,7 @@ using StockAlertTracker.API.Interfaces.Repositories;
 using StockAlertTracker.API.Interfaces.Services;
 using StockAlertTracker.API.Models;
 using StockAlertTracker.API.Models.Enums;
+using System.Text.Json;
 namespace StockAlertTracker.API.Services
 {
     public class AdminService : IAdminService
@@ -250,10 +251,42 @@ namespace StockAlertTracker.API.Services
             return response;
         }
 
-        public Task<ServiceResponse<AdminStatsDto>> GetPlatformStatsAsync()
+        public async Task<ServiceResponse<AdminStatsDto>> GetPlatformStatsAsync()
         {
-            // We will implement this in Part 4
-            throw new NotImplementedException();
+            var response = new ServiceResponse<AdminStatsDto>();
+
+            // 1. Get the latest stats record from the DB
+            var latestStats = await _unitOfWork.PlatformStats.GetLatestStatsAsync();
+
+            if (latestStats == null)
+            {
+                // This can happen if the worker hasn't run yet
+                // We'll return an empty/default object
+                response.Message = "No analytics data found. Please wait for the nightly report to run.";
+                response.Data = new AdminStatsDto
+                {
+                    TotalUsers = 0,
+                    ActiveUsers = 0,
+                    TopHeldStocks = new List<StockStatDto>(),
+                    TopAlertedStocks = new List<StockStatDto>()
+                };
+                return response;
+            }
+
+            // 2. Deserialize the JSON strings back into objects
+            var topHeld = JsonSerializer.Deserialize<List<StockStatDto>>(latestStats.TopWishlistedStocks);
+            var topAlerted = JsonSerializer.Deserialize<List<StockStatDto>>(latestStats.TopAlertedStocks);
+
+            // 3. Map to our DTO
+            response.Data = new AdminStatsDto
+            {
+                TotalUsers = latestStats.TotalUsers,
+                ActiveUsers = latestStats.ActiveUsers,
+                TopHeldStocks = topHeld,
+                TopAlertedStocks = topAlerted
+            };
+
+            return response;
         }
 
         // --- Helper methods for sending email ---

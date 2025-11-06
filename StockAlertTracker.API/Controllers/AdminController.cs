@@ -73,5 +73,12 @@ namespace StockAlertTracker.API.Controllers
             }
             return Ok(response);
         }
+
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetPlatformStats()
+        {
+            var response = await _adminService.GetPlatformStatsAsync();
+            return Ok(response);
+        }
     }
 }

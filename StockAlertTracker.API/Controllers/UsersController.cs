@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockAlertTracker.API.DTOs.User;
+using StockAlertTracker.API.Interfaces.Repositories;
 using StockAlertTracker.API.Interfaces.Services;
 using System.Security.Claims;
 
@@ -13,11 +14,14 @@ namespace StockAlertTracker.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public UsersController(IUserService userService, IHttpContextAccessor httpContextAccessor,
+                                IUnitOfWork unitOfWork)
         {
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
+            _unitOfWork = unitOfWork;
         }
 
         // Helper to get the logged-in user's ID from the JWT token
@@ -72,6 +76,11 @@ namespace StockAlertTracker.API.Controllers
                 return BadRequest(new { Success = false, Message = "No file uploaded." });
             }
 
+            if (!file.ContentType.StartsWith("image/"))
+            {
+                return BadRequest(new { Success = false, Message = "Invalid file type. Only images are allowed." });
+            }
+
             // Convert IFormFile to byte[] (this is the "dirty" HTTP part)
             byte[] imageBytes;
             using (var memoryStream = new MemoryStream())
@@ -81,13 +90,34 @@ namespace StockAlertTracker.API.Controllers
             }
 
             // Call the service with the "clean" byte array
-            var response = await _userService.UpdateProfileImageAsync(userId, imageBytes);
+            var response = await _userService.UpdateProfileImageAsync(userId, imageBytes, file.ContentType);
             if (!response.Success)
             {
                 return BadRequest(response);
             }
 
             return Ok(response);
+        }
+
+        [HttpGet("my-image")]
+        public async Task<IActionResult> GetMyProfileImage()
+        {
+            var userId = GetUserIdFromToken();
+
+            // We can't use a DTO, we need the raw model for the byte[] and content type
+            var userFromDb = await _unitOfWork.Users.GetByIdAsync(userId);
+
+            if (userFromDb?.ProfileImage == null || userFromDb.ProfileImage.Length == 0)
+            {
+                // Return 404 Not Found if there's no image
+                return NotFound(new { Success = false, Message = "No profile image found." });
+            }
+
+            // Get the saved content type (e.g., "image/png", "image/jpeg")
+            var contentType = userFromDb.ProfileImageContentType ?? "application/octet-stream";
+
+            // Return the image data as a file
+            return File(userFromDb.ProfileImage, contentType);
         }
     }
 }

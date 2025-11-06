@@ -4,11 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StockAlertTracker.API.Data;
+using StockAlertTracker.API.Helpers;
+using StockAlertTracker.API.Hubs;
 using StockAlertTracker.API.Interfaces.Repositories;
 using StockAlertTracker.API.Interfaces.Services;
 using StockAlertTracker.API.Repositories;
 using StockAlertTracker.API.Services;
-using StockAlertTracker.API.Helpers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,14 +45,23 @@ builder.Services.AddScoped<IStockDataService, StockDataService>();
 builder.Services.AddScoped<ITradeService, TradeService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 
-// --- 4. Add AutoMapper ---
+builder.Services.AddScoped<IAlertService, AlertService>();
+
+// ---  Register Background Workers ---
+builder.Services.AddHostedService<RealTimePriceWorker>();
+builder.Services.AddHostedService<AnalyticsWorker>();
+
+// ---  Add AutoMapper ---
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<AutoMapperProfile>();
 });
 
-// --- 5. Add HttpContextAccessor (needed for services to access user ID) ---
+// ---  Add HttpContextAccessor (needed for services to access user ID) ---
 builder.Services.AddHttpContextAccessor();
+
+// --- SignalR Service ---
+builder.Services.AddSignalR();
 
 // --- Configure HttpClientFactory for Finnhub ---
 builder.Services.AddHttpClient("Finnhub", client =>
@@ -61,7 +71,7 @@ builder.Services.AddHttpClient("Finnhub", client =>
 
 builder.Services.AddControllers();
 
-// --- 6. Configure JWT Authentication ---
+// --- . Configure JWT Authentication ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -77,7 +87,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// --- 7. Configure Swagger to use JWT ---
+// --- . Configure Swagger to use JWT ---
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "StockAlertTracker.API", Version = "v1" });
@@ -109,6 +119,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// --- . Register Background Workers ---
+builder.Services.AddHostedService<RealTimePriceWorker>();
+
 // --- Build the App ---
 var app = builder.Build();
 
@@ -121,10 +134,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// --- Add CORS (IMPORTANT for React) ---
+// This allows your React app (e.g., from localhost:4200) to connect
+app.UseCors(policy => policy
+    .WithOrigins("http://localhost:4200") // Your React app's address
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()); // Required for SignalR
+
 // --- 8. Add Authentication and Authorization to the Pipeline ---
 app.UseAuthentication(); // 1. Are you who you say you are?
 app.UseAuthorization();  // 2. Do you have permission to be here?
 
 app.MapControllers();
+
+// --- NEW: Map the SignalR Hub Endpoint ---
+app.MapHub<PriceHub>("/pricehub");
 
 app.Run();
