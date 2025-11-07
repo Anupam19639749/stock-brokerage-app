@@ -46,7 +46,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("deposit")]
-        public async Task<IActionResult> AddMoney(AddMoneyRequestDto addMoneyDto)
+        public async Task<IActionResult> AddMoney([FromForm] AddMoneyRequestDto addMoneyDto)
         {
             var userId = GetUserIdFromToken();
             var response = await _walletService.AddMoneyAsync(userId, addMoneyDto);

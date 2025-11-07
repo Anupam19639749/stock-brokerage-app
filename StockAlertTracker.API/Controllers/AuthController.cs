@@ -16,7 +16,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterUserDto registerDto)
+        public async Task<IActionResult> Register([FromForm] RegisterUserDto registerDto)
         {
             var response = await _authService.RegisterAsync(registerDto);
             if (!response.Success)
@@ -27,7 +27,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromForm] LoginDto loginDto)
         {
             var response = await _authService.LoginAsync(loginDto);
             if (!response.Success)
@@ -38,14 +38,14 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordDto forgotPasswordDto)
         {
             var response = await _authService.ForgotPasswordAsync(forgotPasswordDto.Email);
             return Ok(response); // Always return OK to prevent email snooping
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetDto)
+        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto resetDto)
         {
             var response = await _authService.ResetPasswordAsync(resetDto);
             if (!response.Success)

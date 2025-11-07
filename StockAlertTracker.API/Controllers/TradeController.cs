@@ -27,7 +27,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("order")]
-        public async Task<IActionResult> PlaceOrder(OrderRequestDto orderRequest)
+        public async Task<IActionResult> PlaceOrder([FromForm] OrderRequestDto orderRequest)
         {
             var userId = GetUserIdFromToken();
             var response = await _tradeService.PlaceOrderAsync(userId, orderRequest);

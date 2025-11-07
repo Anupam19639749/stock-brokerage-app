@@ -21,8 +21,8 @@ namespace StockAlertTracker.API.Services
         // --- Hard-coded list for Indices ---
         private static readonly Dictionary<string, string> _marketIndices = new Dictionary<string, string>
         {
-            { "^NSEI", "Nifty 50" },
-            { "^BSESN", "S&P BSE Sensex" }
+            { "SPY", "S&P 500 ETF" },
+            { "DIA", "Dow Jones ETF" }
         };
 
         public StockDataService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
@@ -95,22 +95,27 @@ namespace StockAlertTracker.API.Services
 
             foreach (var index in _marketIndices)
             {
-                var quoteResponse = await GetLiveQuoteAsync(index.Key); // Reuse our existing method
+                var quoteResponse = await GetLiveQuoteAsync(index.Key);
                 if (quoteResponse.Success && quoteResponse.Data != null)
                 {
                     var quote = quoteResponse.Data;
-                    decimal change = quote.CurrentPrice - quote.PreviousClosePrice;
+                    bool isMarketClosed = quote.CurrentPrice == 0;
+
+                    decimal displayPrice = isMarketClosed ? quote.PreviousClosePrice : quote.CurrentPrice;
+                    decimal change = isMarketClosed ? 0 : quote.CurrentPrice - quote.PreviousClosePrice;
+
                     decimal percentChange = 0;
                     if (quote.PreviousClosePrice != 0)
                     {
-                        percentChange = (change / quote.PreviousClosePrice) * 100;
+                        percentChange = isMarketClosed ? 0 : (change / quote.PreviousClosePrice) * 100;
                     }
 
+                    
                     indexList.Add(new MarketIndexDto
                     {
                         Ticker = index.Key,
                         Name = index.Value,
-                        CurrentPrice = quote.CurrentPrice,
+                        CurrentPrice = displayPrice,
                         Change = change,
                         PercentChange = percentChange
                     });
@@ -124,7 +129,6 @@ namespace StockAlertTracker.API.Services
         public async Task<ServiceResponse<IEnumerable<StockQuoteCardDto>>> GetMarketOverviewAsync(int page, int limit)
         {
             var response = new ServiceResponse<IEnumerable<StockQuoteCardDto>>();
-            var quoteList = new List<StockQuoteCardDto>();
 
             // Calculate which tickers to fetch based on page and limit
             var tickersToFetch = _marketOverviewTickers
@@ -145,17 +149,21 @@ namespace StockAlertTracker.API.Services
                 if (quoteResponse.Success && quoteResponse.Data != null)
                 {
                     var quote = quoteResponse.Data;
-                    decimal change = quote.CurrentPrice - quote.PreviousClosePrice;
+                    bool isMarketClosed = quote.CurrentPrice == 0;
+
+                    decimal displayPrice = isMarketClosed ? quote.PreviousClosePrice : quote.CurrentPrice;
+                    decimal change = isMarketClosed ? 0 : quote.CurrentPrice - quote.PreviousClosePrice;
+
                     decimal percentChange = 0;
                     if (quote.PreviousClosePrice != 0)
                     {
-                        percentChange = (change / quote.PreviousClosePrice) * 100;
+                        percentChange = isMarketClosed ? 0 : (change / quote.PreviousClosePrice) * 100;
                     }
 
                     return new StockQuoteCardDto
                     {
                         Ticker = ticker,
-                        CurrentPrice = quote.CurrentPrice,
+                        CurrentPrice = displayPrice,
                         Change = change,
                         PercentChange = percentChange
                     };

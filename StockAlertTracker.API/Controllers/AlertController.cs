@@ -26,7 +26,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAlert(AlertCreateDto alertDto)
+        public async Task<IActionResult> CreateAlert([FromForm] AlertCreateDto alertDto)
         {
             var userId = GetUserIdFromToken();
             var response = await _alertService.CreateAlertAsync(userId, alertDto);

@@ -43,7 +43,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPut("profile")]
-        public async Task<IActionResult> UpdateMyProfile(ProfileUpdateDto profileDto)
+        public async Task<IActionResult> UpdateMyProfile([FromForm] ProfileUpdateDto profileDto)
         {
             var userId = GetUserIdFromToken();
             var response = await _userService.UpdateProfileAsync(userId, profileDto);
@@ -55,7 +55,7 @@ namespace StockAlertTracker.API.Controllers
         }
 
         [HttpPost("kyc")]
-        public async Task<IActionResult> SubmitKyc(KycSubmitDto kycDto)
+        public async Task<IActionResult> SubmitKyc([FromForm] KycSubmitDto kycDto)
         {
             var userId = GetUserIdFromToken();
             var response = await _userService.SubmitKycAsync(userId, kycDto);
