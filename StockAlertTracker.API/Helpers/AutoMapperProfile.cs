@@ -42,6 +42,21 @@ namespace StockAlertTracker.API.Helpers
             CreateMap<PriceAlert, AlertDetailsDto>()
                 .ForMember(dest => dest.Condition, opt => opt.MapFrom(src => src.Condition.ToString()))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            //(Admin User Management) ---
+            CreateMap<User, AdminUserListDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
+                .ForMember(dest => dest.KycStatus, opt => opt.MapFrom(src => src.KycStatus.ToString()));
+
+            CreateMap<User, AdminUserDetailsDto>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
+                .ForMember(dest => dest.KycStatus, opt => opt.MapFrom(src => src.KycStatus.ToString()))
+                .ForMember(dest => dest.HasProfileImage, opt => opt.MapFrom(src => src.ProfileImage != null && src.ProfileImage.Length > 0))
+                // Financial info will be populated manually by the service
+                .ForMember(dest => dest.Wallet, opt => opt.Ignore())
+                .ForMember(dest => dest.Portfolio, opt => opt.Ignore())
+                .ForMember(dest => dest.Orders, opt => opt.Ignore());
         }
     }
 }

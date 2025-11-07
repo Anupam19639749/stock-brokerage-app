@@ -71,6 +71,9 @@ namespace StockAlertTracker.API.Models
         [Required]
         public RoleType Role { get; set; } = RoleType.User;
 
+        [Required]
+        public bool IsActive { get; set; } = true;
+
         // --- Navigation Properties ---
         public virtual Wallet? Wallet { get; set; } // User has one Wallet
         public virtual ICollection<PortfolioHolding> PortfolioHoldings { get; set; }

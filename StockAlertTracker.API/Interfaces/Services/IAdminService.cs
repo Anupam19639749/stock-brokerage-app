@@ -13,5 +13,10 @@ namespace StockAlertTracker.API.Interfaces.Services
         Task<ServiceResponse<OrderDetailsDto>> ApproveOrderAsync(int orderId);
         Task<ServiceResponse<OrderDetailsDto>> RejectOrderAsync(int orderId);
         Task<ServiceResponse<AdminStatsDto>> GetPlatformStatsAsync();
+
+        Task<ServiceResponse<IEnumerable<AdminUserListDto>>> GetAllUsersAsync();
+        Task<ServiceResponse<AdminUserDetailsDto>> GetUserByIdAsync(int userId);
+        Task<ServiceResponse<string>> BlockUserAsync(int userId);
+        Task<ServiceResponse<string>> UnblockUserAsync(int userId);
     }
 }

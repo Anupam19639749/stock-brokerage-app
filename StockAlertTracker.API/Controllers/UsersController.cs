@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace StockAlertTracker.API.Controllers
 {
-    [Authorize(Roles = "User")] // Only authenticated Users can access this
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -54,6 +54,7 @@ namespace StockAlertTracker.API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("kyc")]
         public async Task<IActionResult> SubmitKyc([FromForm] KycSubmitDto kycDto)
         {

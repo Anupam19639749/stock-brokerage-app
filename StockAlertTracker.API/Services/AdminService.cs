@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore; // For transactions
 using StockAlertTracker.API.DTOs.Admin;
 using StockAlertTracker.API.DTOs.Trade;
+using StockAlertTracker.API.DTOs.Wallet;
 using StockAlertTracker.API.Helpers;
 using StockAlertTracker.API.Interfaces.Repositories;
 using StockAlertTracker.API.Interfaces.Services;
@@ -286,6 +287,85 @@ namespace StockAlertTracker.API.Services
                 TopAlertedStocks = topAlerted
             };
 
+            return response;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<AdminUserListDto>>> GetAllUsersAsync()
+        {
+            var response = new ServiceResponse<IEnumerable<AdminUserListDto>>();
+            var users = await _unitOfWork.Users.FindAsync(u => u.Role == Models.Enums.RoleType.User);
+            response.Data = _mapper.Map<IEnumerable<AdminUserListDto>>(users);
+            return response;
+        }
+
+        public async Task<ServiceResponse<AdminUserDetailsDto>> GetUserByIdAsync(int userId)
+        {
+            var response = new ServiceResponse<AdminUserDetailsDto>();
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null || user.Role == Models.Enums.RoleType.Admin)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
+
+            // 1. Map the basic user details
+            var userDetailsDto = _mapper.Map<AdminUserDetailsDto>(user);
+
+            // 2. Manually populate the financial data (as requested)
+            var wallet = await _unitOfWork.Wallets.GetByUserIdAsync(userId);
+            var portfolio = await _unitOfWork.PortfolioHoldings.GetHoldingsByUserIdAsync(userId);
+            var orders = await _unitOfWork.Orders.GetOrdersByUserIdAsync(userId);
+
+            userDetailsDto.Wallet = _mapper.Map<WalletBalanceDto>(wallet);
+            userDetailsDto.Portfolio = _mapper.Map<IEnumerable<PortfolioHoldingDto>>(portfolio);
+            userDetailsDto.Orders = _mapper.Map<IEnumerable<OrderDetailsDto>>(orders);
+
+            response.Data = userDetailsDto;
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> BlockUserAsync(int userId)
+        {
+            var response = new ServiceResponse<string>();
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
+            if (user.Role == RoleType.Admin)
+            {
+                response.Success = false;
+                response.Message = "Cannot block an admin account.";
+                return response;
+            }
+
+            user.IsActive = false;
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.CompleteAsync();
+
+            response.Message = $"User {user.Email} has been successfully blocked.";
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> UnblockUserAsync(int userId)
+        {
+            var response = new ServiceResponse<string>();
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
+
+            user.IsActive = true;
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.CompleteAsync();
+
+            response.Message = $"User {user.Email} has been successfully unblocked.";
             return response;
         }
 

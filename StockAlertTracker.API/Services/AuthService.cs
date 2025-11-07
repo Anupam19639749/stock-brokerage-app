@@ -108,6 +108,13 @@ namespace StockAlertTracker.API.Services
                 return response;
             }
 
+            if (!user.IsActive)
+            {
+                response.Success = false;
+                response.Message = "Your account has been suspended. Please contact support.";
+                return response;
+            }
+
             // Login successful, update last login
             user.LastLogin = DateTime.UtcNow;
             _unitOfWork.Users.Update(user);

@@ -21,11 +21,21 @@ namespace StockAlertTracker.API.Services
             _mapper = mapper;
         }
 
+        private const int MaxOrderQuantity = 10000;
+
         public async Task<ServiceResponse<OrderDetailsDto>> PlaceOrderAsync(int userId, OrderRequestDto orderRequest)
         {
+            if (orderRequest.Quantity > MaxOrderQuantity)
+            {
+                return new ServiceResponse<OrderDetailsDto>
+                {
+                    Success = false,
+                    Message = $"Order quantity exceeds the maximum limit of {MaxOrderQuantity} shares."
+                };
+            }
             // 1. Get live price from Finnhub
             var priceResponse = await _stockDataService.GetLiveQuoteAsync(orderRequest.Ticker);
-            if (!priceResponse.Success)
+            if (!priceResponse.Success || priceResponse.Data == null)
             {
                 return new ServiceResponse<OrderDetailsDto> { Success = false, Message = $"Stock ticker '{orderRequest.Ticker}' not found." };
             }
