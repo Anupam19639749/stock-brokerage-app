@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using StockAlertTracker.API.Validation;
 
 namespace StockAlertTracker.API.DTOs.User
 {
@@ -18,6 +19,8 @@ namespace StockAlertTracker.API.DTOs.User
         [StringLength(20)]
         public string? Gender { get; set; }
 
+        [DateNotInFuture] // Our first check
+        [MinimumAge(12, ErrorMessage = "You must be at least 12 years old to use this service.")] 
         public DateTime? DateOfBirth { get; set; }
     }
 }
