@@ -50,7 +50,7 @@ namespace StockAlertTracker.API.Services
             await _unitOfWork.CompleteAsync();
 
             // --- SEND KYC APPROVED EMAIL (as planned) ---
-            string htmlBody = await ((EmailService)_emailService).GetTemplateHtmlAsync("KycApproved.html");
+            string htmlBody = await _emailService.GetTemplateHtmlAsync("KycApproved.html");
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
 
             await _emailService.SendEmailAsync(user.Email, "KYC Approved! You're Ready to Trade.", htmlBody);
@@ -83,7 +83,7 @@ namespace StockAlertTracker.API.Services
             await _unitOfWork.CompleteAsync();
 
             // --- SEND KYC REJECTED EMAIL (as planned) ---
-            string htmlBody = await ((EmailService)_emailService).GetTemplateHtmlAsync("KycRejected.html");
+            string htmlBody = await _emailService.GetTemplateHtmlAsync("KycRejected.html");
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
 
             // We can also fire and forget here if we want, but to handle the exceptions properly, we'll await
@@ -372,7 +372,7 @@ namespace StockAlertTracker.API.Services
         // --- Helper methods for sending email ---
         private async Task SendTradeConfirmationEmail(User user, Order order)
         {
-            string htmlBody = await ((EmailService)_emailService).GetTemplateHtmlAsync("TradeConfirmation.html");
+            string htmlBody = await _emailService.GetTemplateHtmlAsync("TradeConfirmation.html");
 
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
             htmlBody = htmlBody.Replace("{{OrderType}}", order.Type.ToString().ToUpper());
@@ -388,7 +388,7 @@ namespace StockAlertTracker.API.Services
 
         private async Task SendTradeRejectionEmail(User user, Order order)
         {
-            string htmlBody = await ((EmailService)_emailService).GetTemplateHtmlAsync("TradeRejected.html");
+            string htmlBody = await _emailService.GetTemplateHtmlAsync("TradeRejected.html");
 
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
             htmlBody = htmlBody.Replace("{{OrderType}}", order.Type.ToString().ToUpper());

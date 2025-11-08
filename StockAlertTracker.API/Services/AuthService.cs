@@ -158,7 +158,7 @@ namespace StockAlertTracker.API.Services
             await _unitOfWork.CompleteAsync();
 
             // Send email
-            string htmlBody = await ((EmailService)_emailService).GetTemplateHtmlAsync("PasswordReset.html");
+            string htmlBody = await _emailService.GetTemplateHtmlAsync("PasswordReset.html");
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
             htmlBody = htmlBody.Replace("{{Code}}", code);
 
@@ -240,7 +240,7 @@ namespace StockAlertTracker.API.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private string ComputeSha256Hash(string rawData)
+        public string ComputeSha256Hash(string rawData)
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
