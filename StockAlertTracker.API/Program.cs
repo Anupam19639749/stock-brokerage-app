@@ -85,6 +85,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // Try to read the token from the "token" cookie
+                // This is for your React app
+                if (context.Request.Cookies.ContainsKey("token"))
+                {
+                    context.Token = context.Request.Cookies["token"];
+                }
+
+                // If the token is not in the cookie, the middleware will 
+                // automatically look for the "Authorization: Bearer" header
+                // which is what Swagger uses.
+                return Task.CompletedTask;
+            }
+        };
     });
 
 // --- . Configure Swagger to use JWT ---
@@ -137,7 +154,7 @@ app.UseHttpsRedirection();
 // --- Add CORS (IMPORTANT for React) ---
 // This allows your React app (e.g., from localhost:4200) to connect
 app.UseCors(policy => policy
-    .WithOrigins("http://localhost:4200") // Your React app's address
+    .WithOrigins("http://localhost:5173" , "https://localhost:5173") // Your React app's address
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()); // Required for SignalR

@@ -34,7 +34,29 @@ namespace StockAlertTracker.API.Controllers
             {
                 return Unauthorized(response);
             }
+
+            // We set the secure HttpOnly cookie for our React app
+            Response.Cookies.Append("token", response.Data.Token, new CookieOptions
+            {
+                HttpOnly = true, // JavaScript can't read it
+                Secure = true,   // Only sent over HTTPS
+                SameSite = SameSiteMode.None, // Protects against CSRF
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
             return Ok(response);
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            // Clear the HttpOnly cookie
+            Response.Cookies.Delete("token", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+            return Ok(new { Success = true, Message = "Logged out successfully." });
         }
 
         [HttpPost("forgot-password")]

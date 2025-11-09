@@ -60,7 +60,7 @@ namespace StockAlertTracker.API.Models
         public string? BankIfscCode { get; set; }
 
         [Required]
-        public KycStatus KycStatus { get; set; } = KycStatus.Pending;
+        public KycStatus KycStatus { get; set; } = KycStatus.NotSubmitted;
 
         // --- System Fields ---
         public DateTime? LastLogin { get; set; }

@@ -58,7 +58,7 @@ namespace StockAlertTracker.API.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Role = Models.Enums.RoleType.User,
-                KycStatus = Models.Enums.KycStatus.Pending,
+                KycStatus = Models.Enums.KycStatus.NotSubmitted,
                 CreatedAt = DateTime.UtcNow
             };
 
