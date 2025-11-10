@@ -53,7 +53,7 @@ namespace StockAlertTracker.API.Services
             string htmlBody = await _emailService.GetTemplateHtmlAsync("KycApproved.html");
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
 
-            await _emailService.SendEmailAsync(user.Email, "KYC Approved! You're Ready to Trade.", htmlBody);
+            _ = _emailService.SendEmailAsync(user.Email, "KYC Approved! You're Ready to Trade.", htmlBody);
             // --- End of Email ---
 
             response.Message = $"KYC for {user.Email} has been approved.";
@@ -87,7 +87,7 @@ namespace StockAlertTracker.API.Services
             htmlBody = htmlBody.Replace("{{UserName}}", user.FirstName);
 
             // We can also fire and forget here if we want, but to handle the exceptions properly, we'll await
-            await _emailService.SendEmailAsync(user.Email, "Your KYC Application Update", htmlBody);
+            _ =  _emailService.SendEmailAsync(user.Email, "Your KYC Application Update", htmlBody);
             // --- End of Email ---
 
             response.Message = $"KYC for {user.Email} has been rejected.";
@@ -167,7 +167,7 @@ namespace StockAlertTracker.API.Services
             await _unitOfWork.CompleteAsync();
 
             // Send confirmation email
-            await SendTradeConfirmationEmail(user, order);
+            _ = SendTradeConfirmationEmail(user, order);
 
             response.Data = _mapper.Map<OrderDetailsDto>(order);
             response.Message = $"Order #{order.Id} approved.";
@@ -245,7 +245,7 @@ namespace StockAlertTracker.API.Services
             await _unitOfWork.CompleteAsync();
 
             // 5. Call the new helper method to send the email
-            await SendTradeRejectionEmail(user, order);
+            _ = SendTradeRejectionEmail(user, order);
 
             response.Data = _mapper.Map<OrderDetailsDto>(order);
             response.Message = $"Order #{order.Id} rejected and resources refunded.";

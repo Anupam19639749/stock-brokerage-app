@@ -36,9 +36,9 @@ namespace StockAlertTracker.API.Services
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<UserTokenDto>> RegisterAsync(RegisterUserDto registerDto)
+        public async Task<ServiceResponse<string>> RegisterAsync(RegisterUserDto registerDto)
         {
-            var response = new ServiceResponse<UserTokenDto>();
+            var response = new ServiceResponse<string>();
 
             if (await _unitOfWork.Users.GetByEmailAsync(registerDto.Email) != null)
             {
@@ -79,13 +79,7 @@ namespace StockAlertTracker.API.Services
                 return response;
             }
 
-            var userDetails = _mapper.Map<UserDetailsDto>(user);
-            response.Data = new UserTokenDto
-            {
-                Token = CreateToken(user),
-                User = userDetails
-            };
-            response.Message = "User registered successfully.";
+            response.Message = "User registered successfully. Please log in.";
             return response;
         }
 

@@ -166,6 +166,6 @@ app.UseAuthorization();  // 2. Do you have permission to be here?
 app.MapControllers();
 
 // --- NEW: Map the SignalR Hub Endpoint ---
-app.MapHub<PriceHub>("/pricehub");
+app.MapHub<PriceHub>("/api/pricehub");
 
 app.Run();
