@@ -1,0 +1,13 @@
+# .NET Ignore
+bin/
+obj/
+.vs/
+*.user
+
+# React/Node Ignore
+node_modules/
+dist/
+build/
+.env
+.env.local
+.DS_Store

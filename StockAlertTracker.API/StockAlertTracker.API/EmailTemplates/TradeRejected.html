@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .header {
+            font-size: 24px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+        /* Red for rejection */
+        .content {
+            margin: 20px 0;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .reason {
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">Your Trade Has Been Rejected</div>
+        <div class="content">
+            <p>Hi {{UserName}},</p>
+            <p>We are sorry to inform you that your order to **{{OrderType}} {{Quantity}} shares** of **{{Ticker}}** (Order ID: #{{OrderId}}) has been rejected by our team.</p>
+
+            <p class="reason">
+                This could be due to market volatility or internal factors.
+            </p>
+
+            <p>Any funds or shares that were held for this order have been returned to your account. You may log in to review your wallet and portfolio.</p>
+        </div>
+        <br>
+        <p class="footer">Thank you,<br>The Stock Tracker Team</p>
+    </div>
+</body>
+</html>
